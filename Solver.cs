@@ -18,15 +18,9 @@ namespace GenshinSolver
         Infinite, // 线性方程组有无穷解
         None // 线性方程组无解
     }
-
-    public class InfiniteSolutionException : Exception
+    public class NoSolutionException : Exception
     {
-        public InfiniteSolutionException() : base() { }
-    }
-
-    public class NoneSolutionException : Exception
-    {
-        public NoneSolutionException() : base() { }
+        public NoSolutionException() : base() { }
     }
     
     public class MalformedMatrixException : Exception
@@ -40,13 +34,15 @@ namespace GenshinSolver
         public float mod; // 模数，可能取值为[1, mod]
         private MatrixF change_mt; // 变化列表，每一步的影响
         private VectorF init_ve; // 初始状态
+        private float target_value; // 目标状态
 
-        public Solver(float[] init_state, float[,] change_list, int m)
+        public Solver(float[] init_state, float[,] change_list, int m, float target = float.MaxValue)
         {
             mod = m;
             count = init_state.Length;
             init_ve = DenseVector.OfArray(init_state);
             change_mt = DenseMatrix.OfArray(change_list);
+            target_value = target;
         }
         
         private static SolutionTypes DiscussSolutionType(MatrixF m, VectorF v) // 判断线性方程组解的情况。
@@ -80,22 +76,27 @@ namespace GenshinSolver
         private List<VectorF> primitive_solve() // 初步求解，获得带有不完整模数的列表。
         {
             List<VectorF> result_list = new List<VectorF>();
-            for(float target = 1; target <= mod; target++)
+            if (target_value == float.MaxValue) // 默认目标，全部覆盖
             {
-                VectorF target_vt = DenseVector.Create(count, target) - init_ve;
+                for(float target = 1; target <= mod; target++)
+                {
+                    VectorF target_vt = DenseVector.Create(count, target) - init_ve;
+                    SolutionTypes st = DiscussSolutionType(change_mt, target_vt);
+                    if (st == SolutionTypes.Single)
+                    {
+                        VectorF solution_p = change_mt.Solve(target_vt);
+                        result_list.Add(solution_p);
+                    }
+                }
+            } else // 设置了目标。
+            {
+                VectorF target_vt = DenseVector.Create(count, target_value) - init_ve;
                 SolutionTypes st = DiscussSolutionType(change_mt, target_vt);
                 if (st == SolutionTypes.Single)
                 {
                     VectorF solution_p = change_mt.Solve(target_vt);
                     result_list.Add(solution_p);
-                } else if (st == SolutionTypes.Infinite)
-                {
-                    throw new InfiniteSolutionException();
-                } else if (st == SolutionTypes.None)
-                {
-                    throw new NoneSolutionException();
                 }
-
             }
             return result_list;
         }
@@ -133,9 +134,21 @@ namespace GenshinSolver
             }
             return t;
         }
-        public int[] solve() // 返回一组最优的解。如果最优解有多个，则返回其中的一个。
+
+        public int final_value(int[] solution) // 输入解，得到根据这个解可以达到的最后的值。
+        {
+            // 取初值的首个进行计算
+            int tmp = (int) Math.Round(init_ve[0]);
+            for(int i = 0;i < solution.Length;i++)
+            {
+                tmp += ((int)Math.Round(change_mt.Column(0)[i]) * solution[i]);
+            }
+            return (tmp % (int)mod) + 1;
+        }
+        public (int[],int) solve() // 返回一组最优的解。如果最优解有多个，则返回其中的一个。返回一个解和一个解的结果。
         {
             List<VectorF> p_result = primitive_solve();
+            if (p_result.Count == 0) throw new NoSolutionException();
             int[] step_count = new int[p_result.Count];
             int minimal_step_count = int.MaxValue;
             int[] best_solution = new int[count];
@@ -148,7 +161,7 @@ namespace GenshinSolver
                     best_solution = current_solution;
                 }
             });
-            return best_solution;
+            return (best_solution, final_value(best_solution));
         }
     }
 }

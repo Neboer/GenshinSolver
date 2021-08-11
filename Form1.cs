@@ -27,16 +27,19 @@ namespace GenshinSolver
 
         private void init_state_text_TextChanged(object sender, EventArgs e)
         {
-
-            var tl = GetMaxIntFromStr(init_state_text.Text);
-            if (tl >= 3 && tl <= 5)
+            if(init_state_text.TextLength > 0)
             {
-                foreach (RadioButton c in modular.Controls)
+                var tl = GetMaxIntFromStr(init_state_text.Text);
+                if (tl >= 3 && tl <= 5)
                 {
-                    c.Checked = c.Tag.ToString() == tl.ToString();
-                    c.Enabled = int.Parse(c.Tag.ToString()) >= tl;
+                    foreach (RadioButton c in modular.Controls)
+                    {
+                        c.Checked = c.Tag.ToString() == tl.ToString();
+                        c.Enabled = int.Parse(c.Tag.ToString()) >= tl;
+                    }
                 }
             }
+
         }
 
         private void nearby_button_Click(object sender, EventArgs e)
@@ -92,21 +95,50 @@ namespace GenshinSolver
             }
             if(mod > 0)
             {
-                Solver P = new Solver(Str2floatList(init_state_text.Text), f_change_list, mod);
+                Solver P = (target_status.Text=="不限"||target_status.Text=="") ? new Solver(Str2floatList(init_state_text.Text), f_change_list, mod) :
+                    new Solver(Str2floatList(init_state_text.Text), f_change_list, mod, (float)int.Parse(target_status.Text));
                 try
                 {
-                    int[] solution = P.solve();
+                    var (solution, step) = P.solve();
+                    target_status.Text = step.ToString();
                     result_text.Text = IntList2Str(solution);
-                } catch (NoneSolutionException)
+
+                } catch (NoSolutionException)
                 {
-                    MessageBox.Show("无解", "求解错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } catch (InfiniteSolutionException)
-                {
-                    MessageBox.Show("无穷解", "求解错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } catch (MalformedMatrixException)
+                    MessageBox.Show("无解或仅有无穷解", "求解错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } 
+                 catch (MalformedMatrixException)
                 {
                     MessageBox.Show("变化列表条件错误", "求解错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void init_state_text_Validating(object sender, CancelEventArgs e)
+        {
+            if (!CheckValidNumStr(init_state_text.Text, true))
+            {
+                e.Cancel = true;
+                MessageBox.Show("必须输入仅由0-9的数字组成的字符串", "输入错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void update_target_status_list(int max_val)
+        {
+            target_status.Items.Clear();
+            target_status.Items.Add("不限");
+            for(int i = 1; i <= max_val; i++)
+            {
+                target_status.Items.Add(i.ToString());
+            }
+        }
+
+        private void CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton rb = sender as RadioButton;
+            if(rb.Checked)
+            {
+                update_target_status_list(int.Parse((string)rb.Tag));
             }
         }
     }

@@ -45,6 +45,8 @@ namespace GenshinSolver
             this.nearby_button = new System.Windows.Forms.Button();
             this.add = new System.Windows.Forms.Button();
             this.minus = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.target_status = new System.Windows.Forms.ComboBox();
             this.modular.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,12 +66,13 @@ namespace GenshinSolver
             this.init_state_text.Size = new System.Drawing.Size(121, 21);
             this.init_state_text.TabIndex = 1;
             this.init_state_text.TextChanged += new System.EventHandler(this.init_state_text_TextChanged);
+            this.init_state_text.Validating += new System.ComponentModel.CancelEventHandler(this.init_state_text_Validating);
             // 
             // change_list
             // 
             this.change_list.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.change_list.FormattingEnabled = true;
-            this.change_list.Location = new System.Drawing.Point(138, 139);
+            this.change_list.Location = new System.Drawing.Point(138, 175);
             this.change_list.Name = "change_list";
             this.change_list.Size = new System.Drawing.Size(121, 126);
             this.change_list.TabIndex = 2;
@@ -78,7 +81,7 @@ namespace GenshinSolver
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(62, 142);
+            this.label1.Location = new System.Drawing.Point(62, 178);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(53, 12);
             this.label1.TabIndex = 3;
@@ -87,7 +90,7 @@ namespace GenshinSolver
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(64, 298);
+            this.label2.Location = new System.Drawing.Point(64, 334);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(53, 12);
             this.label2.TabIndex = 4;
@@ -95,7 +98,7 @@ namespace GenshinSolver
             // 
             // result_text
             // 
-            this.result_text.Location = new System.Drawing.Point(138, 295);
+            this.result_text.Location = new System.Drawing.Point(138, 331);
             this.result_text.Name = "result_text";
             this.result_text.ReadOnly = true;
             this.result_text.Size = new System.Drawing.Size(121, 21);
@@ -103,7 +106,7 @@ namespace GenshinSolver
             // 
             // calculate_button
             // 
-            this.calculate_button.Location = new System.Drawing.Point(147, 349);
+            this.calculate_button.Location = new System.Drawing.Point(147, 385);
             this.calculate_button.Name = "calculate_button";
             this.calculate_button.Size = new System.Drawing.Size(75, 23);
             this.calculate_button.TabIndex = 6;
@@ -114,7 +117,7 @@ namespace GenshinSolver
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(73, 88);
+            this.label3.Location = new System.Drawing.Point(73, 124);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(29, 12);
             this.label3.TabIndex = 7;
@@ -125,7 +128,7 @@ namespace GenshinSolver
             this.modular.Controls.Add(this.val3);
             this.modular.Controls.Add(this.val4);
             this.modular.Controls.Add(this.val5);
-            this.modular.Location = new System.Drawing.Point(138, 84);
+            this.modular.Location = new System.Drawing.Point(138, 120);
             this.modular.Name = "modular";
             this.modular.Size = new System.Drawing.Size(121, 22);
             this.modular.TabIndex = 8;
@@ -141,6 +144,7 @@ namespace GenshinSolver
             this.val3.Tag = "3";
             this.val3.Text = "3";
             this.val3.UseVisualStyleBackColor = true;
+            this.val3.CheckedChanged += new System.EventHandler(this.CheckedChanged);
             // 
             // val4
             // 
@@ -168,7 +172,7 @@ namespace GenshinSolver
             // 
             // nearby_button
             // 
-            this.nearby_button.Location = new System.Drawing.Point(52, 169);
+            this.nearby_button.Location = new System.Drawing.Point(52, 205);
             this.nearby_button.Name = "nearby_button";
             this.nearby_button.Size = new System.Drawing.Size(75, 25);
             this.nearby_button.TabIndex = 9;
@@ -179,7 +183,7 @@ namespace GenshinSolver
             // add
             // 
             this.add.Image = ((System.Drawing.Image)(resources.GetObject("add.Image")));
-            this.add.Location = new System.Drawing.Point(265, 139);
+            this.add.Location = new System.Drawing.Point(265, 175);
             this.add.Name = "add";
             this.add.Size = new System.Drawing.Size(30, 30);
             this.add.TabIndex = 10;
@@ -189,18 +193,38 @@ namespace GenshinSolver
             // minus
             // 
             this.minus.Image = ((System.Drawing.Image)(resources.GetObject("minus.Image")));
-            this.minus.Location = new System.Drawing.Point(265, 175);
+            this.minus.Location = new System.Drawing.Point(265, 211);
             this.minus.Name = "minus";
             this.minus.Size = new System.Drawing.Size(30, 30);
             this.minus.TabIndex = 11;
             this.minus.UseVisualStyleBackColor = true;
             this.minus.Click += new System.EventHandler(this.minus_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(64, 83);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(53, 12);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "目标状态";
+            // 
+            // target_status
+            // 
+            this.target_status.FormattingEnabled = true;
+            this.target_status.Location = new System.Drawing.Point(138, 80);
+            this.target_status.Name = "target_status";
+            this.target_status.Size = new System.Drawing.Size(121, 20);
+            this.target_status.TabIndex = 13;
+            this.target_status.Text = "不限";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(348, 404);
+            this.ClientSize = new System.Drawing.Size(348, 437);
+            this.Controls.Add(this.target_status);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.minus);
             this.Controls.Add(this.add);
             this.Controls.Add(this.nearby_button);
@@ -241,6 +265,8 @@ namespace GenshinSolver
         private System.Windows.Forms.Button nearby_button;
         private System.Windows.Forms.Button add;
         private System.Windows.Forms.Button minus;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox target_status;
     }
 }
 

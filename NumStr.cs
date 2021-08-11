@@ -1,7 +1,17 @@
 ﻿using System;
-
 public class NumStr
 {
+	 public static bool CheckValidNumStr(string val, bool allow_zero, int max_length=int.MaxValue)
+    {
+		foreach(char c in val)
+        {
+			if (c < '0' || c > '9') return false;
+			int r =(int) (c - '0');
+			if (r == 0 && !allow_zero) return false;
+			if (val.Length > max_length) return false;
+        }
+		return true;
+    }
 	 public static int[] Str2IntList(string str)
 	{
 		char[] ca = str.ToCharArray();
