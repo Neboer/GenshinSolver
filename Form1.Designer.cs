@@ -238,6 +238,7 @@ namespace GenshinSolver
             this.Controls.Add(this.init_state_text);
             this.Controls.Add(this.lb1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "Form1";
             this.Text = "原神稻妻关灯谜题求解器";
             this.Load += new System.EventHandler(this.Form1_Load);

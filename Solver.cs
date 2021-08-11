@@ -39,10 +39,17 @@ namespace GenshinSolver
         public Solver(float[] init_state, float[,] change_list, int m, float target = float.MaxValue)
         {
             mod = m;
-            count = init_state.Length;
-            init_ve = DenseVector.OfArray(init_state);
-            change_mt = DenseMatrix.OfArray(change_list);
-            target_value = target;
+            if(init_state.Length == change_list.GetLength(0) && change_list.GetLength(0) == change_list.GetLength(1))
+            {
+                count = init_state.Length;
+                init_ve = DenseVector.OfArray(init_state);
+                change_mt = DenseMatrix.OfArray(change_list);
+                target_value = target;
+            }
+            else
+            {
+                throw new MalformedMatrixException();
+            }
         }
         
         private static SolutionTypes DiscussSolutionType(MatrixF m, VectorF v) // 判断线性方程组解的情况。
@@ -143,7 +150,8 @@ namespace GenshinSolver
             {
                 tmp += ((int)Math.Round(change_mt.Column(0)[i]) * solution[i]);
             }
-            return (tmp % (int)mod) + 1;
+            int result = tmp % (int)mod;
+            return (int)(result == 0?mod:result);
         }
         public (int[],int) solve() // 返回一组最优的解。如果最优解有多个，则返回其中的一个。返回一个解和一个解的结果。
         {
